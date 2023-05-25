@@ -1,18 +1,18 @@
 use actix_web::{body::BoxBody, HttpResponse, HttpResponseBuilder as Response, ResponseError};
-use hextacy::{cache::CacheError, drivers::DriverError};
+use hextacy::drivers::DriverError;
 use reqwest::StatusCode;
 use serde::Serialize;
 use thiserror::Error;
 use validify::ValidationErrors;
 
-use crate::db::adapters::AdapterError;
+use crate::{cache::CacheAdapterError, db::adapters::AdapterError};
 
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("Adapter: {0}")]
     Adapter(#[from] AdapterError),
     #[error("Cache: {0}")]
-    Cache(#[from] CacheError),
+    Cache(#[from] CacheAdapterError),
     #[error("Driver: {0}")]
     Driver(#[from] DriverError),
     #[error("Validation: {0}")]

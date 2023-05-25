@@ -1,10 +1,12 @@
-use super::data::{Login, LoginPayload, Logout, LogoutPayload, Register, RegisterPayload};
-use super::service::AuthenticationContract;
+use crate::app::core::auth::data::{
+    Login, LoginPayload, Logout, LogoutPayload, Register, RegisterPayload,
+};
+use crate::app::core::auth::domain::AuthenticationContract;
 use crate::error::Error;
 use actix_web::{web, Responder};
 use validify::Validify;
 
-pub(super) async fn register<T: AuthenticationContract>(
+pub async fn register<T: AuthenticationContract>(
     data: web::Json<RegisterPayload>,
     service: web::Data<T>,
 ) -> Result<impl Responder, Error> {
@@ -12,7 +14,7 @@ pub(super) async fn register<T: AuthenticationContract>(
     service.register(registration).await
 }
 
-pub(super) async fn login<T: AuthenticationContract>(
+pub async fn login<T: AuthenticationContract>(
     data: web::Json<LoginPayload>,
     service: web::Data<T>,
 ) -> Result<impl Responder, Error> {
@@ -20,7 +22,7 @@ pub(super) async fn login<T: AuthenticationContract>(
     service.login(credentials).await
 }
 
-pub(super) async fn logout<T: AuthenticationContract>(
+pub async fn logout<T: AuthenticationContract>(
     data: web::Json<LogoutPayload>,
     service: web::Data<T>,
 ) -> Result<impl Responder, Error> {

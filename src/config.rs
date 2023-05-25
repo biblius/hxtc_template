@@ -1,15 +1,16 @@
 pub mod cache;
 pub mod constants;
 
-use std::sync::Arc;
-
+use crate::app::router;
+use crate::error::Error;
 use actix_cors::Cors;
 use actix_web::http::header::*;
 use actix_web::web::ServiceConfig;
 use hextacy::drivers::cache::redis::Redis;
 use hextacy::drivers::db::postgres::seaorm::PostgresSea;
+use std::sync::Arc;
 
-use crate::app::router;
+pub type AppResult<T> = Result<T, Error>;
 
 #[derive(Debug, Clone)]
 pub struct AppState {
@@ -27,8 +28,7 @@ impl AppState {
 }
 
 pub fn init(state: &AppState, cfg: &mut ServiceConfig) {
-    router::resources::routes(cfg);
-    //router::auth::setup::routes(state, cfg);
+    router::route(state, cfg);
 }
 
 pub fn setup_cors(allowed_origins: &[&str], expose_headers: &[&str]) -> Cors {

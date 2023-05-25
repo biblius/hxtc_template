@@ -1,11 +1,10 @@
+use super::contract::{AuthMwCacheContract, AuthMwRepoContract};
 use actix_web::dev::ServiceRequest;
 use futures_util::FutureExt;
 use hextacy::contract;
 use hextacy::{call, transform};
 use std::rc::Rc;
 use tracing::info;
-
-use super::contract::{CacheContract, RepositoryContract};
 
 #[derive(Debug, Clone)]
 pub struct AuthenticationGuard<R, C> {
@@ -26,14 +25,14 @@ pub struct AuthenticationGuardMiddleware<S, Repo, Cache> {
 
 transform! {
     AuthenticationGuard => AuthenticationGuardMiddleware,
-    R: RepositoryContract,
-    C: CacheContract
+    R: AuthMwRepoContract,
+    C: AuthMwCacheContract
 }
 
 call! {
     AuthenticationGuardMiddleware,
-    R: RepositoryContract,
-    C: CacheContract;
+    R: AuthMwRepoContract,
+    C: AuthMwCacheContract;
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
         info!("Auth guard: Validating session");
@@ -52,7 +51,7 @@ call! {
 #[contract]
 impl<R, C> AuthenticationGuardInner<R, C>
 where
-    R: RepositoryContract + Send + Sync,
-    C: CacheContract + Send + Sync,
+    R: AuthMwRepoContract + Send + Sync,
+    C: AuthMwCacheContract + Send + Sync,
 {
 }

@@ -1,24 +1,19 @@
-use crate::config::cache;
+use crate::cache::contracts::SimpleCacheAccess;
 use crate::db::models::session::{self, Session};
 use crate::db::repository::session::SessionRepository;
 use crate::error::Error;
-use hextacy::drivers::cache::redis::{Redis, RedisConnection};
 use hextacy::drivers::Connect;
 use hextacy::{adapt, contract};
-use hextacy::{cache::CacheAccess, cache::CacheError};
-use std::sync::Arc;
 use uuid::Uuid;
 
 adapt! {
-    Repository,
-
-    use Sea for Connection as driver in super;
-
-    Session: SessionRepository<Connection>
+    AuthMwRepo,
+    use Driver for C as driver in super;
+    Session: SessionRepository<C>
 }
 
 #[contract]
-impl<D, C, Session> Repository<D, C, Session>
+impl<D, C, Session> AuthMwRepo<D, C, Session>
 where
     C: Send,
     D: Connect<Connection = C> + Send + Sync,
@@ -32,25 +27,50 @@ where
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Cache {
-    pub driver: Arc<Redis>,
-}
-
-impl CacheAccess for Cache {
-    fn domain() -> &'static str {
-        cache::domain::AUTH
-    }
-
-    fn connection(&self) -> Result<RedisConnection, CacheError> {
-        self.driver.connect().map_err(|e| e.into())
-    }
+adapt! {
+    AuthMwCache,
+    use Driver for Connection as driver;
+    Cache: SimpleCacheAccess<Connection>
 }
 
 #[contract(super)]
-impl Cache {
-    fn get_session(&self, session_id: &str) -> Result<Session, Error> {
-        self.get_json(cache::id::Auth::Session, session_id)
+#[contract]
+impl<D, C, Cache> AuthMwCache<D, C, Cache>
+where
+    C: Send,
+    D: Connect<Connection = C> + Send + Sync,
+    Cache: SimpleCacheAccess<C> + Send + Sync,
+{
+    async fn get_session(&self, session_id: &str) -> Result<Session, Error> {
+        let mut conn = self.driver.connect().await?;
+        Cache::get_json(&mut conn, crate::cache::id::Auth::Session, session_id)
+            .await
             .map_err(Error::new)
+    }
+}
+
+impl<D, C, S> Clone for AuthMwRepo<D, C, S>
+where
+    D: Connect<Connection = C> + Send + Sync,
+    S: SessionRepository<C> + Send + Sync,
+{
+    fn clone(&self) -> Self {
+        Self {
+            driver: self.driver.clone(),
+            ..*self
+        }
+    }
+}
+
+impl<D, C, Cache> Clone for AuthMwCache<D, C, Cache>
+where
+    D: Connect<Connection = C> + Send + Sync,
+    Cache: SimpleCacheAccess<C> + Send + Sync,
+{
+    fn clone(&self) -> Self {
+        Self {
+            driver: self.driver.clone(),
+            ..*self
+        }
     }
 }
