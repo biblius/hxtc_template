@@ -1,6 +1,4 @@
-use actix_web::{body::BoxBody, HttpResponseBuilder, Responder};
 use hextacy::web::http::response::Response;
-use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use validify::Validify;
 
@@ -33,11 +31,3 @@ pub struct SessionResponse<'a> {
 }
 
 impl Response<'_> for SessionResponse<'_> {}
-
-impl Responder for SessionResponse<'_> {
-    type Body = BoxBody;
-
-    fn respond_to(self, _: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
-        HttpResponseBuilder::new(StatusCode::OK).json(self)
-    }
-}

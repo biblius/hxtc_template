@@ -14,13 +14,12 @@ impl<C> SessionRepository<C> for SessionAdapter
 where
     C: ConnectionTrait + Send + Sync,
 {
-    async fn get_by_id(conn: &mut C, id: &Uuid, csrf: &Uuid) -> Result<Session, AdapterError> {
+    async fn get_by_id(conn: &mut C, id: Uuid, csrf: Uuid) -> Result<Session, AdapterError> {
         SessionEntity::find()
-            .filter(Column::Id.eq(*id))
-            .filter(Column::Csrf.eq(*csrf))
-            .all(conn)
+            .filter(Column::Id.eq(id))
+            .filter(Column::Csrf.eq(csrf))
+            .one(conn)
             .await?
-            .pop()
             .map_or_else(|| Err(AdapterError::DoesNotExist), |s| Ok(s.into()))
     }
 }

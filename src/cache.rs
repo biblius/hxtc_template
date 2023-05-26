@@ -13,6 +13,7 @@ pub enum CacheAdapterError {
     Redis(#[from] redis::RedisError),
 }
 
+/// Implement on cache adapters that should construct keys
 pub trait Cacher {
     /// Construct a full cache key using the identifier and key.
     /// Intended to be used by enums that serve as cache identifiers.
@@ -21,22 +22,23 @@ pub trait Cacher {
     }
 }
 
+/// Implement on enums that serve as cache keys
 pub trait KeyPrefix {
     fn id(self) -> &'static str;
 }
 
+/// The domain is the first part of the full key: `domain:id:key`
 pub mod domain {
     pub const AUTH: &str = "auth";
 }
 
+/// The id is the second part of the full key: `domain:id:key`
 pub mod id {
     use super::KeyPrefix;
 
     #[derive(Debug, PartialEq, Eq)]
     pub enum Auth {
-        /// For keeping track of login attempts
         LoginAttempts,
-        /// For caching sessions
         Session,
     }
 

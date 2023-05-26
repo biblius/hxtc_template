@@ -57,9 +57,8 @@ async fn init_postgres() -> Arc<PostgresSea> {
         "PG_HOST",
         "PG_PORT",
         "PG_DATABASE",
-        "PG_POOL_SIZE",
     ]);
-    let pool_size = params.pop().expect("PG_POOL_SIZE must be set");
+
     let db = params.pop().expect("PG_DATABASE must be set");
     let port = params.pop().expect("PG_PORT must be set");
     let host = params.pop().expect("PG_HOST must be set");
@@ -73,16 +72,15 @@ async fn init_postgres() -> Arc<PostgresSea> {
             &user,
             &pw,
             &db,
-            pool_size.parse().expect("Invalid PG_POOL_SIZE"),
+            8,
         )
         .await,
     )
 }
 
 fn init_redis() -> Arc<Redis> {
-    let mut params =
-        hextacy::env::get_multiple(&["RD_HOST", "RD_PORT", "RD_DATABASE", "RD_POOL_SIZE"]);
-    let pool_size = params.pop().expect("RD_POOL_SIZE must be set");
+    let mut params = hextacy::env::get_multiple(&["RD_HOST", "RD_PORT", "RD_DATABASE"]);
+
     let db = params.pop().expect("RD_DATABASE must be set");
     let port = params.pop().expect("RD_PORT must be set");
     let host = params.pop().expect("RD_HOST must be set");
@@ -93,6 +91,6 @@ fn init_redis() -> Arc<Redis> {
         None,
         None,
         db.parse().expect("Invalid RD_DATABASE"),
-        pool_size.parse().expect("Invalid RD_POOL_SIZE"),
+        8,
     ))
 }

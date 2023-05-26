@@ -1,4 +1,7 @@
 use super::contract::{AuthMwCacheContract, AuthMwRepoContract};
+use crate::cache::domain::AUTH;
+use crate::config::AppResult;
+use crate::db::models::session::Session;
 use actix_web::dev::ServiceRequest;
 use futures_util::FutureExt;
 use hextacy::contract;
@@ -54,4 +57,7 @@ where
     R: AuthMwRepoContract + Send + Sync,
     C: AuthMwCacheContract + Send + Sync,
 {
+    async fn get_session(id: &str) -> AppResult<Session> {
+        todo!()
+    }
 }

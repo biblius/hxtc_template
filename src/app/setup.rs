@@ -40,7 +40,7 @@ pub mod auth_service {
         fn configure(state: &AppState, cfg: &mut ServiceConfig) {
             let service = Self {
                 repository: RepositoryComponent::new(state.repository.clone()),
-                cache: AuthCache::new(state.cache.clone()),
+                cache: CacheComponent::new(state.cache.clone()),
             };
             cfg.app_data(web::Data::new(service));
         }

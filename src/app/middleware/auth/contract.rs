@@ -19,7 +19,7 @@ where
     D: Connect<Connection = C> + Send + Sync,
     Session: SessionRepository<C> + Send + Sync,
 {
-    async fn get_session(&self, session_id: &Uuid, csrf: &Uuid) -> Result<session::Session, Error> {
+    async fn get_session(&self, session_id: Uuid, csrf: Uuid) -> Result<session::Session, Error> {
         let mut conn = self.driver.connect().await?;
         Session::get_by_id(&mut conn, session_id, csrf)
             .await
