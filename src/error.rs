@@ -1,5 +1,5 @@
 use actix_web::{body::BoxBody, HttpResponse, HttpResponseBuilder as Response, ResponseError};
-use hextacy::drivers::DriverError;
+use hextacy::driver::DriverError;
 use reqwest::StatusCode;
 use serde::Serialize;
 use thiserror::Error;

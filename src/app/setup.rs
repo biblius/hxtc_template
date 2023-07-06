@@ -2,8 +2,8 @@ use crate::cache::adapters::RedisAdapter;
 use crate::db::adapters::{session::SessionAdapter, user::UserAdapter};
 use crate::AppState;
 use actix_web::web::{self, ServiceConfig};
-use hextacy::drivers::cache::redis::{Redis, RedisConnection};
-use hextacy::drivers::db::postgres::seaorm::{DatabaseConnection, PostgresSea};
+use hextacy::driver::cache::redis::{Redis, RedisConnection};
+use hextacy::driver::db::postgres::seaorm::{DatabaseConnection, PostgresSea};
 use hextacy::web::Configure;
 
 pub mod auth_middleware {

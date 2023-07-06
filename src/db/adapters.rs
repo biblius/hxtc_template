@@ -8,7 +8,7 @@ pub enum AdapterError {
     #[error("Entry does not exist")]
     DoesNotExist,
     #[error("Driver: {0}")]
-    Driver(#[from] hextacy::drivers::DriverError),
+    Driver(#[from] hextacy::driver::DriverError),
     #[error("SeaORM: {0}")]
     SeaORM(#[from] sea_orm::DbErr),
 }

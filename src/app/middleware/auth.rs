@@ -2,7 +2,7 @@ pub mod contract;
 pub mod interceptor;
 
 use crate::{cache::contracts::SimpleCacheAccess, db::repository::session::SessionRepository};
-use hextacy::drivers::Connect;
+use hextacy::driver::Driver;
 use std::{rc::Rc, sync::Arc};
 
 use self::{
@@ -16,9 +16,9 @@ impl<RepoDriver, CacheDriver, RepoConn, CacheConn, Session, Cache>
         AuthMwCache<CacheDriver, CacheConn, Cache>,
     >
 where
-    RepoDriver: Connect<Connection = RepoConn> + Send + Sync,
+    RepoDriver: Driver<Connection = RepoConn> + Send + Sync,
     Session: SessionRepository<RepoConn> + Send + Sync,
-    CacheDriver: Connect<Connection = CacheConn> + Send + Sync,
+    CacheDriver: Driver<Connection = CacheConn> + Send + Sync,
     Cache: SimpleCacheAccess<CacheConn> + Send + Sync,
 {
     pub fn new(adapter: Arc<RepoDriver>, cache: Arc<CacheDriver>) -> Self {
@@ -35,8 +35,8 @@ impl<RepoDriver, CacheDriver, CacheConn, Cache, RepoConn, Session>
         AuthMwCache<CacheDriver, CacheConn, Cache>,
     >
 where
-    CacheDriver: Connect<Connection = CacheConn> + Send + Sync,
-    RepoDriver: Connect<Connection = RepoConn> + Send + Sync,
+    CacheDriver: Driver<Connection = CacheConn> + Send + Sync,
+    RepoDriver: Driver<Connection = RepoConn> + Send + Sync,
     Cache: SimpleCacheAccess<CacheConn> + Send + Sync,
     Session: SessionRepository<RepoConn> + Send + Sync,
 {

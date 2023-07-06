@@ -1,4 +1,3 @@
-pub mod cache;
 pub mod constants;
 
 use crate::app::router;
@@ -6,8 +5,8 @@ use crate::error::Error;
 use actix_cors::Cors;
 use actix_web::http::header::*;
 use actix_web::web::ServiceConfig;
-use hextacy::drivers::cache::redis::Redis;
-use hextacy::drivers::db::postgres::seaorm::PostgresSea;
+use hextacy::driver::cache::redis::Redis;
+use hextacy::driver::db::postgres::seaorm::PostgresSea;
 use std::sync::Arc;
 
 pub type AppResult<T> = Result<T, Error>;

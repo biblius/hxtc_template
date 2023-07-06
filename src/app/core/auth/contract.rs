@@ -2,10 +2,10 @@ use crate::cache::contracts::SimpleCacheAccess;
 use crate::config::AppResult;
 use crate::db::models;
 use crate::db::repository::{session::SessionRepository, user::UserRepository};
-use hextacy::drivers::Connect;
-use hextacy::{adapt, contract};
+use hextacy::driver::Driver;
+use hextacy::{contract, drive};
 
-adapt! {
+drive! {
     AuthRepository,
 
     use Driver for Connection as driver;
@@ -18,7 +18,7 @@ adapt! {
 impl<D, C, User, Session> AuthRepository<D, C, User, Session>
 where
     C: Send,
-    D: Connect<Connection = C> + Send + Sync,
+    D: Driver<Connection = C> + Send + Sync,
     User: UserRepository<C> + Send + Sync,
     Session: SessionRepository<C> + Send + Sync,
 {
@@ -27,7 +27,7 @@ where
     }
 }
 
-adapt! {
+drive! {
     AuthCache,
 
     use Driver for Connection as driver;
@@ -39,7 +39,7 @@ adapt! {
 impl<D, C, Cache> AuthCache<D, C, Cache>
 where
     C: Send,
-    D: Connect<Connection = C> + Send + Sync,
+    D: Driver<Connection = C> + Send + Sync,
     Cache: SimpleCacheAccess<C> + Send + Sync,
 {
     async fn get_login_attempts(user_id: &str) -> AppResult<i64> {
